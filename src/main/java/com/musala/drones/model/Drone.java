@@ -1,6 +1,8 @@
 package com.musala.drones.model;
 
 import com.musala.drones.dto.MedicationDto;
+import com.musala.drones.exceptions.DroneBatteryLevelException;
+import com.musala.drones.exceptions.DroneLoadException;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -68,10 +70,10 @@ public class Drone {
         var models = Model.values();
         List<Medication> medicationList = new ArrayList<>();
         medicationList.add(new Medication(
-                        UUID.randomUUID().toString(),
+                        "Dummy-Medication_1",
                         (int) (Math.random() * 500) + 1,
-                        "",
-                        ""
+                        "DUM_01",
+                        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/VariousPills.jpg/1600px-VariousPills.jpg?20070116123730"
                 )
         );
         return new Drone(
@@ -136,9 +138,12 @@ public class Drone {
         return medications;
     }
 
-    public Drone loadMedication(MedicationDto medicationDto) {
-        if (isOverWeight(medicationDto.weight()).and(isBatteryBellow25Percent()).test(this)) {
-            throw new InternalError("A drone cannot carry more that its recommended wight.");
+    public Drone loadMedication(MedicationDto medicationDto) throws DroneLoadException {
+        if (isOverWeight(medicationDto.weight()).test(this)) {
+            throw new DroneLoadException("A drone cannot carry more that its recommended wight.");
+        }
+        if (isBatteryBellow25Percent().test(this)) {
+            throw new DroneBatteryLevelException("The Drone doesn't have enough battery");
         }
         Medication medication = new Medication(
                 medicationDto.name(),
@@ -152,7 +157,7 @@ public class Drone {
     }
 
     private Predicate<Drone> isOverWeight(int medicationWeight) {
-        return drone -> drone.getMedications().stream().mapToInt(Medication::getWeight).sum()
+        return drone -> this.getMedications().stream().mapToInt(Medication::getWeight).sum()
                 + medicationWeight > drone.weightLimit;
     }
 

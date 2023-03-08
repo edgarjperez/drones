@@ -1,6 +1,7 @@
 package com.musala.drones.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "medications")
@@ -9,9 +10,10 @@ public class Medication {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    @Pattern(regexp = "^[a-zA-Z0-9_-]*$")
     private String name;
     private Integer weight;
+    @Pattern(regexp = "^[A-Z0-9_]*$")
     private String code;
     private String image;
 

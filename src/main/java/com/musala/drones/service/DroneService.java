@@ -7,7 +7,6 @@ import com.musala.drones.dto.MedicationDto;
 import com.musala.drones.model.Drone;
 import com.musala.drones.model.Medication;
 import com.musala.drones.repositories.DroneRepository;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +33,12 @@ public class DroneService {
         //TODO Use JPA projections, possible improvement, another option is to use Mapstruct
         return this.droneRepository.findById(id)
                 .map(drone ->
-                        new DroneWithMedicationsDto(
+                        new DroneWithMedicationsDto(new DroneDto(
                                 drone.getSerialNumber(),
                                 drone.getModel(),
                                 drone.getWeightLimit(),
                                 drone.getBatteryCapacity(),
-                                drone.getState(),
+                                drone.getState()),
                                 drone.getMedications()
                                         .stream()
                                         .map(medication ->
@@ -72,12 +71,12 @@ public class DroneService {
         return this.droneRepository.findById(droneId)
                 .map(drone -> drone.loadMedication(medicationDto))
                 .map(this.droneRepository::saveAndFlush)
-                .map(updatedDrone -> new DroneWithMedicationsDto(
+                .map(updatedDrone -> new DroneWithMedicationsDto(new DroneDto(
                         updatedDrone.getSerialNumber(),
                         updatedDrone.getModel(),
                         updatedDrone.getWeightLimit(),
                         updatedDrone.getBatteryCapacity(),
-                        updatedDrone.getState(),
+                        updatedDrone.getState()),
                         updatedDrone.getMedications()
                                 .stream()
                                 .map(medication ->
@@ -105,7 +104,6 @@ public class DroneService {
 
     @Transactional(readOnly = true)
     public List<MedicationDto> checkMedications(long id) {
-        //TODO Use JPA projections, need further investigation
         return this.droneRepository.findById(id).stream()
                 .map(Drone::getMedications)
                 .flatMap(medication -> medication.stream().map(medication1 ->
