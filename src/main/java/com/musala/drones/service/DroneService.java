@@ -1,16 +1,16 @@
 package com.musala.drones.service;
 
+import com.musala.drones.dto.DroneBatteryLevelDto;
 import com.musala.drones.dto.DroneDto;
 import com.musala.drones.dto.DroneWithMedicationsDto;
 import com.musala.drones.dto.MedicationDto;
 import com.musala.drones.model.Drone;
 import com.musala.drones.model.Medication;
 import com.musala.drones.repositories.DroneRepository;
-import com.musala.drones.repositories.MedicationRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,11 +19,9 @@ import java.util.stream.Collectors;
 public class DroneService {
 
     private final DroneRepository droneRepository;
-    private final MedicationRepository medicationRepository;
 
-    public DroneService(DroneRepository droneRepository, MedicationRepository medicationRepository) {
+    public DroneService(DroneRepository droneRepository) {
         this.droneRepository = droneRepository;
-        this.medicationRepository = medicationRepository;
     }
 
     @Transactional(readOnly = true)
@@ -33,7 +31,7 @@ public class DroneService {
 
     @Transactional(readOnly = true)
     public DroneWithMedicationsDto getADrone(long id) {
-        //TODO Use JPA projections, need further investigation
+        //TODO Use JPA projections, possible improvement, another option is to use Mapstruct
         return this.droneRepository.findById(id)
                 .map(drone ->
                         new DroneWithMedicationsDto(
@@ -117,5 +115,10 @@ public class DroneService {
                                 medication1.getCode(),
                                 medication1.getImage()))
                 ).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DroneBatteryLevelDto getBatteryLevelForADrone(long droneId) {
+        return this.droneRepository.getDroneBatteryCapacity(droneId);
     }
 }

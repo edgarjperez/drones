@@ -137,7 +137,7 @@ public class Drone {
     }
 
     public Drone loadMedication(MedicationDto medicationDto) {
-        if (isOverWeight().test(medicationDto)) {
+        if (isOverWeight(medicationDto.weight()).and(isBatteryBellow25Percent()).test(this)) {
             throw new InternalError("A drone cannot carry more that its recommended wight.");
         }
         Medication medication = new Medication(
@@ -147,11 +147,16 @@ public class Drone {
                 medicationDto.image()
         );
         this.getMedications().add(medication);
+        this.setState(State.LOADING);
         return this;
     }
 
-    private Predicate<MedicationDto> isOverWeight() {
-        var currentWeight = this.getMedications().stream().mapToInt(Medication::getWeight).sum();
-        return medicationDto -> currentWeight + medicationDto.weight() > this.weightLimit;
+    private Predicate<Drone> isOverWeight(int medicationWeight) {
+        return drone -> drone.getMedications().stream().mapToInt(Medication::getWeight).sum()
+                + medicationWeight > drone.weightLimit;
+    }
+
+    private Predicate<Drone> isBatteryBellow25Percent() {
+        return drone -> drone.batteryCapacity < 25;
     }
 }

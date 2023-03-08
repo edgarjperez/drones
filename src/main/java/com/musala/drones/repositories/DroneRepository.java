@@ -1,5 +1,6 @@
 package com.musala.drones.repositories;
 
+import com.musala.drones.dto.DroneBatteryLevelDto;
 import com.musala.drones.dto.DroneDto;
 import com.musala.drones.dto.DroneWithMedicationsDto;
 import com.musala.drones.model.Drone;
@@ -18,10 +19,9 @@ public interface DroneRepository extends JpaRepository<Drone, Long> {
             """)
     List<DroneDto> getAllDrones();
     @Query("""
-            SELECT new com.musala.drones.dto.DroneWithMedicationsDto(
-            d.serialNumber, d.model, d.weightLimit, d.batteryCapacity, d.state, d.medications)
+            SELECT new com.musala.drones.dto.DroneBatteryLevelDto(d.serialNumber, d.batteryCapacity)
             FROM Drone d
             WHERE d.id=:id
             """)
-    DroneWithMedicationsDto getADroneWithMedications(@Param("id") Long id);
+    DroneBatteryLevelDto getDroneBatteryCapacity(@Param("id") Long id);
 }

@@ -1,6 +1,7 @@
 package com.musala.drones.controllers;
 
 
+import com.musala.drones.dto.DroneBatteryLevelDto;
 import com.musala.drones.dto.DroneDto;
 import com.musala.drones.dto.DroneWithMedicationsDto;
 import com.musala.drones.dto.MedicationDto;
@@ -45,8 +46,13 @@ public class DroneController {
         return this.service.getAvailableDrones();
     }
     @GetMapping("/drones/{id}/medications")
-    public List<MedicationDto> checkMedications(@PathVariable("id") Long id) {
-        return this.service.checkMedications(id);
+    public List<MedicationDto> checkMedications(@PathVariable("id") Long droneId) {
+        return this.service.checkMedications(droneId);
+    }
+
+    @GetMapping("/drones/{id}/battery")
+    public DroneBatteryLevelDto checkBattery(@PathVariable("id") Long droneId) {
+        return this.service.getBatteryLevelForADrone(droneId);
     }
 
 }
