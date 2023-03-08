@@ -3,6 +3,7 @@ package com.musala.drones.controllers;
 
 import com.musala.drones.dto.DroneDto;
 import com.musala.drones.dto.DroneWithMedicationsDto;
+import com.musala.drones.dto.MedicationDto;
 import com.musala.drones.service.DroneService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,20 @@ public class DroneController {
     @PostMapping("/drones")
     public DroneDto registerADrone(@RequestBody DroneDto drone) {
         return this.service.registerADrone(drone);
+    }
+
+    @PutMapping("/drones/{id}")
+    public DroneWithMedicationsDto loadMedication(@PathVariable("id") Long droneId, @RequestBody MedicationDto medication) {
+        return this.service.loadDrone(droneId, medication);
+    }
+
+    @GetMapping("/drones/available")
+    public List<DroneDto> allAvailableDrones() {
+        return this.service.getAvailableDrones();
+    }
+    @GetMapping("/drones/{id}/medications")
+    public List<MedicationDto> checkMedications(@PathVariable("id") Long id) {
+        return this.service.checkMedications(id);
     }
 
 }

@@ -1,11 +1,13 @@
 package com.musala.drones.model;
 
+import com.musala.drones.dto.MedicationDto;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Entity
 @Table(name = "drones")
@@ -58,6 +60,7 @@ public class Drone {
     /**
      * Constructor method generated with the only purpose of
      * serve as factory of initial data for the project
+     *
      * @return a new {@link Drone} Object with dummy Data
      */
     public static Drone initialDrone() {
@@ -65,17 +68,17 @@ public class Drone {
         var models = Model.values();
         List<Medication> medicationList = new ArrayList<>();
         medicationList.add(new Medication(
-                UUID.randomUUID().toString(),
-                (int)(Math.random() * 500) + 1,
-                "",
-                ""
+                        UUID.randomUUID().toString(),
+                        (int) (Math.random() * 500) + 1,
+                        "",
+                        ""
                 )
         );
         return new Drone(
                 UUID.randomUUID().toString(),
                 models[new Random().nextInt(models.length - 1) + 1],
-                (int)(Math.random() * 500) + 1,
-                (int)(Math.random() * 100) + 1,
+                500,
+                (int) (Math.random() * 100) + 1,
                 states[new Random().nextInt(states.length - 1) + 1],
                 medicationList
         );
@@ -131,5 +134,24 @@ public class Drone {
 
     public List<Medication> getMedications() {
         return medications;
+    }
+
+    public Drone loadMedication(MedicationDto medicationDto) {
+        if (isOverWeight().test(medicationDto)) {
+            throw new InternalError("A drone cannot carry more that its recommended wight.");
+        }
+        Medication medication = new Medication(
+                medicationDto.name(),
+                medicationDto.weight(),
+                medicationDto.code(),
+                medicationDto.image()
+        );
+        this.getMedications().add(medication);
+        return this;
+    }
+
+    private Predicate<MedicationDto> isOverWeight() {
+        var currentWeight = this.getMedications().stream().mapToInt(Medication::getWeight).sum();
+        return medicationDto -> currentWeight + medicationDto.weight() > this.weightLimit;
     }
 }

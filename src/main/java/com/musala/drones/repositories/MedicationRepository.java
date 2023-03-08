@@ -1,7 +1,7 @@
 package com.musala.drones.repositories;
 
 import com.musala.drones.model.Medication;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MedicationRepository extends CrudRepository<Medication, Long> {
+public interface MedicationRepository extends JpaRepository<Medication, Long> {
 }
