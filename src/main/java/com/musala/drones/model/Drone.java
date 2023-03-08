@@ -43,6 +43,18 @@ public class Drone {
         this.medications = medications;
     }
 
+    public Drone(String serialNumber,
+                 Model model,
+                 Integer weightLimit,
+                 Integer batteryCapacity,
+                 State state) {
+        this.serialNumber = serialNumber;
+        this.model = model;
+        this.weightLimit = weightLimit;
+        this.batteryCapacity = batteryCapacity;
+        this.state = state;
+    }
+
     /**
      * Constructor method generated with the only purpose of
      * serve as factory of initial data for the project
